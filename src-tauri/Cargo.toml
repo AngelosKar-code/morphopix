@@ -1,0 +1,49 @@
+[package]
+name = "tauri-app"
+version = "0.1.0"
+description = "A Tauri App"
+authors = ["you"]
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[lib]
+# The `_lib` suffix may seem redundant but it is necessary
+# to make the lib name unique and wouldn't conflict with the bin name.
+# This seems to be only an issue on Windows, see https://github.com/rust-lang/cargo/issues/8519
+name = "tauri_app_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+tauri = { version = "2", features = [] }
+tauri-plugin-opener = "2"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+image = "0.25.10"
+rayon = "1.12.0"
+tauri-plugin-dialog = "2.7.3"
+webp = "0.3.1"
+base64 = "0.23.1"
+fast_image_resize = { version = "6.1.0", features = ["image"] }
+tauri-plugin-store = "2.4.4"
+img-parts = "0.4.0"
+
+# Image codecs are unusably slow when compiled without optimizations (20s+ per photo in a
+# plain dev build), so dependencies are optimized even in dev builds.
+[profile.dev.package."*"]
+opt-level = 3
+
+# This crate too, and not for its own sake: `fast_image_resize` is generic, so its SIMD
+# resize loops are monomorphized into *this* crate and compiled at *this* opt-level. Left
+# at the default, a 12MP Lanczos3 resize took 2.6s here versus 30ms optimized. The crate is
+# small enough that building it optimized costs little.
+[profile.dev.package.tauri-app]
+opt-level = 3
+
+[profile.release]
+codegen-units = 1
+lto = true
+
