@@ -11,9 +11,8 @@ Download from the [latest release](https://github.com/AngelosKar-code/morphopix/
 
 | Download | Use it if |
 | --- | --- |
-| `MorphoPix_0.1.0_x64-setup.exe` | You want a normal install with a Start menu entry |
-| `MorphoPix_0.1.0_x64_en-US.msi` | You deploy with Group Policy or Intune |
-| `MorphoPix_0.1.0_x64_portable.exe` | You just want to run it, no install |
+| `MorphoPix_..._x64-setup.exe` | You want a normal install with a Start menu entry |
+| `MorphoPix_..._x64_portable.exe` | You just want to run it, no install |
 
 Windows 10 or 11, 64-bit. The installers are small because WebView2 ships with Windows and
 is not bundled.

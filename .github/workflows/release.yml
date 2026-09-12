@@ -1,0 +1,89 @@
+name: Release
+
+# Tagging is the trigger, so the version in tauri.conf.json and the tag are published
+# together and cannot drift apart.
+on:
+  push:
+    tags:
+      - "v*"
+  # Lets a build be exercised without publishing anything.
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check the tag matches the app version
+        if: startsWith(github.ref, 'refs/tags/v')
+        shell: bash
+        run: |
+          tag="${GITHUB_REF_NAME#v}"
+          app=$(node -p "require('./src-tauri/tauri.conf.json').version")
+          if [ "$tag" != "$app" ]; then
+            echo "Tag $GITHUB_REF_NAME does not match tauri.conf.json version $app" >&2
+            exit 1
+          fi
+          echo "Releasing $app"
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - uses: dtolnay/rust-toolchain@stable
+
+      # Cargo's registry and the release target are the slow part of this job.
+      - uses: swatinem/rust-cache@v2
+        with:
+          workspaces: src-tauri
+
+      - run: npm ci
+
+      - name: Check types
+        run: npm run check
+
+      - name: Test the frontend
+        run: npm test
+
+      - name: Test the pipeline
+        working-directory: src-tauri
+        run: cargo test --lib
+
+      - name: Build and publish
+        uses: tauri-apps/tauri-action@v0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tagName: ${{ github.ref_name }}
+          releaseName: MorphoPix ${{ github.ref_name }}
+          releaseDraft: true
+          prerelease: false
+          includeUpdaterJson: false
+
+      # The portable binary is not a bundle target, so tauri-action does not attach it.
+      - name: Attach the portable binary and checksums
+        if: startsWith(github.ref, 'refs/tags/v')
+        shell: bash
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          version="${GITHUB_REF_NAME#v}"
+          staging=release-assets
+          mkdir -p "$staging"
+
+          cp "src-tauri/target/release/MorphoPix.exe" \
+             "$staging/MorphoPix_${version}_x64_portable.exe"
+          cp src-tauri/target/release/bundle/nsis/*-setup.exe "$staging/"
+
+          cd "$staging"
+          sha256sum * > SHA256SUMS.txt
+          cat SHA256SUMS.txt
+
+          gh release upload "$GITHUB_REF_NAME" \
+            "MorphoPix_${version}_x64_portable.exe" SHA256SUMS.txt --clobber
