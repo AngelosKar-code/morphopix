@@ -33,6 +33,9 @@ export class PresetStore {
   async save(name: string, settings: BatchSettings) {
     if (!this.#store || name.trim() === "") return;
     await this.#store.set(name.trim(), settings);
+    // autoSave debounces, so a user who saves a template and immediately closes the window
+    // could lose it. Flushing here means the write has landed before this resolves.
+    await this.#store.save();
     if (!this.names.includes(name.trim())) {
       this.names = [...this.names, name.trim()].sort();
     }
@@ -41,6 +44,7 @@ export class PresetStore {
   async remove(name: string) {
     if (!this.#store) return;
     await this.#store.delete(name);
+    await this.#store.save();
     this.names = this.names.filter((existing) => existing !== name);
   }
 }

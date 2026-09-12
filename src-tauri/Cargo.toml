@@ -30,6 +30,7 @@ base64 = "0.23.1"
 fast_image_resize = { version = "6.1.0", features = ["image"] }
 tauri-plugin-store = "2.4.4"
 img-parts = "0.4.0"
+tauri-plugin-single-instance = "2.4.4"
 
 # Image codecs are unusably slow when compiled without optimizations (20s+ per photo in a
 # plain dev build), so dependencies are optimized even in dev builds.
