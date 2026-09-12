@@ -55,7 +55,18 @@ jobs:
         working-directory: src-tauri
         run: cargo test --lib
 
+      # A manual run exercises the build without publishing. Passing tagName here would
+      # make tauri-action open a release tagged after the branch.
+      - name: Build only
+        if: ${{ !startsWith(github.ref, 'refs/tags/v') }}
+        uses: tauri-apps/tauri-action@v0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          includeUpdaterJson: false
+
       - name: Build and publish
+        if: startsWith(github.ref, 'refs/tags/v')
         uses: tauri-apps/tauri-action@v0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
