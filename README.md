@@ -5,6 +5,38 @@ should happen to every image, and it writes optimised copies without touching th
 
 Built with [Tauri](https://tauri.app) (Rust) and [Svelte](https://svelte.dev).
 
+## Install
+
+Download from the [latest release](https://github.com/AngelosKar-code/morphopix/releases/latest):
+
+| Download | Use it if |
+| --- | --- |
+| `MorphoPix_0.1.0_x64-setup.exe` | You want a normal install with a Start menu entry |
+| `MorphoPix_0.1.0_x64_en-US.msi` | You deploy with Group Policy or Intune |
+| `MorphoPix_0.1.0_x64_portable.exe` | You just want to run it, no install |
+
+Windows 10 or 11, 64-bit. The installers are small because WebView2 ships with Windows and
+is not bundled.
+
+### About the Windows warning
+
+The downloads are not code-signed, so Windows SmartScreen shows **"Windows protected your
+PC"** with an unknown-publisher notice. That message is about publisher reputation, not about
+anything detected in the file: signing certificates cost a few hundred euros a year, which is
+hard to justify for a project like this.
+
+To run it anyway: **More info → Run anyway**.
+
+If you would rather verify the download first, compare its hash against
+`SHA256SUMS.txt` from the same release:
+
+```powershell
+Get-FileHash .\MorphoPix_0.1.0_x64-setup.exe -Algorithm SHA256
+```
+
+That confirms the file arrived exactly as it was published. It is a reasonable habit for any
+unsigned download, this one included.
+
 ## What it does
 
 - **Resize** to a bounding box with Lanczos3, Catmull-Rom, Triangle or Nearest resampling
