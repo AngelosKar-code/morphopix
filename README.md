@@ -110,8 +110,12 @@ default, a 12MP Lanczos3 resize took 2.6s instead of 30ms.
 npm run tauri build
 ```
 
-Produces a standalone executable plus MSI and NSIS installers under
-`src-tauri/target/release/`.
+Produces `MorphoPix.exe` and an NSIS installer under `src-tauri/target/release/`.
+
+Releases are built by CI rather than by hand: pushing a tag `v*` runs
+[the release workflow](.github/workflows/release.yml), which tests, builds, and opens a draft
+release with the installer, the portable binary and checksums. The workflow fails if the tag
+disagrees with the version in `src-tauri/tauri.conf.json`.
 
 ## Licence
 
