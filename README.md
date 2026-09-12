@@ -5,6 +5,8 @@ should happen to every image, and it writes optimised copies without touching th
 
 Built with [Tauri](https://tauri.app) (Rust) and [Svelte](https://svelte.dev).
 
+![Dropping a folder in and processing it](docs/screenshots/demo.gif)
+
 ## Install
 
 Download from the [latest release](https://github.com/AngelosKar-code/morphopix/releases/latest):
@@ -47,6 +49,23 @@ unsigned download, this one included.
   against the real encoder output rather than guessed
 
 Every stage is independently switchable, and combinations can be saved as templates.
+
+## Screens
+
+Drop a folder or individual files, or point it at a directory:
+
+![The empty queue with its drop zone](docs/screenshots/empty-state.png)
+
+Each row reports what it saved. The queue is virtualised, so a folder of a few thousand
+images opens as quickly as a folder of twenty:
+
+![A finished run showing per-file savings](docs/screenshots/queue-done.png)
+
+Compare runs the real pipeline on one image and decodes the result back, so the right half is
+genuine encoder output rather than an approximation — artefacts and file size are both what
+the export will actually be:
+
+![The compare dialog with a before and after divider](docs/screenshots/compare.png)
 
 ## Why there is no ImageMagick
 
